@@ -1,0 +1,44 @@
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+import pandas as pd
+import numpy as np
+
+datasets = load_iris()
+print(datasets['data'])
+
+X = datasets['data']
+Y = datasets['target']
+random_n = np.arange(len(X))
+
+np.random.shuffle(random_n)
+print(random_n)
+
+shuffled_x = X[random_n]
+shuffled_y = Y[random_n]
+train_x, test_x = shuffled_x[:120], shuffled_x[120:]
+train_y, test_y = shuffled_y[:120], shuffled_y[120:]
+
+d_factor = .7
+d_index = int(len(X) * d_factor)
+x_train = shuffled_x[:d_index]
+x_test= shuffled_x[d_index:]
+
+model = DecisionTreeClassifier()
+model.fit(train_x,train_y)
+predictions = model.predict(test_x)
+output = {"actual": test_y, "prediction": predictions}
+df = pd.DataFrame(output)
+
+df.to_csv("prediction.cvs")
+
+def check_accuracy(list_1, list_2):
+    matched = 0
+    not_matched = 0
+    for i in range(0,len(list_1)):
+        if list_1[i] == list_2[i]:
+            matched += 1
+    else:
+        not_matched += 1
+    output = matched / len(list_1)
+    return output * 100
+print("accuracy", check_accuracy(test_y, predictions))
